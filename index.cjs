@@ -111,8 +111,6 @@ const validateRequest = (schema) => (req, res, next) => {
   }
 };
 
-// lib/route-schema.js
-
 class RouteSchema {
   static get tag() {
     throw new Error(
@@ -188,7 +186,6 @@ class RouteSchema {
   }
 }
 
-// joi-to-swagger.js
 // Conversion library for transforming joi schema objects into swagger/OpenApi OAS 3.0 schema definitions.
 
 const { isRef, object: _object, isSchema } = Joi;
@@ -788,9 +785,6 @@ function parse(
 
   return getReturnValue(swagger)
 }
-
-// lib/schema-to-swagger.js
-
 
 /**
  * Primary entry point: convert a Joi-based RouteSchema class to Swagger documentation.
