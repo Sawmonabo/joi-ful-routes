@@ -1,0 +1,10 @@
+#!/bin/sh
+
+npx lint-staged
+
+# Skip tests if no test files are found
+if [ "$(find test -name '*.test.js')" ]; then
+  npm test
+else
+  echo "No test files found, skipping tests."
+fi
