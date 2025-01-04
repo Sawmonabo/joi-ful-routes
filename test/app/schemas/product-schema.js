@@ -68,7 +68,7 @@ class ProductSchema extends RouteSchema {
     const { RequestIdHeader, ProductIdParam } = this.parameters()
 
     return this.createRoute({
-      path: '/api-v2/productinfo/get',
+      path: '/api-v1/product/get',
       method: 'get',
       summary: 'Retrieve product details by ID.',
       headers: RequestIdHeader,
@@ -108,7 +108,7 @@ class ProductSchema extends RouteSchema {
     const { ProductMetadataResponse, ValidationErrorResponse } = this.schemas()
 
     return this.createRoute({
-      path: '/api-v2/productinfo/add',
+      path: '/api-v1/product/add',
       method: 'post',
       summary: 'Add a new product.',
       body: {
@@ -158,7 +158,7 @@ class ProductSchema extends RouteSchema {
     const { ProductIdParam } = this.parameters()
 
     return this.createRoute({
-      path: '/api-v2/productinfo/update',
+      path: '/api-v1/product/update',
       method: 'put',
       summary: 'Update product details by ID.',
       query: ProductIdParam,
@@ -219,7 +219,7 @@ class ProductSchema extends RouteSchema {
     const { ProductIdParam } = this.parameters()
 
     return this.createRoute({
-      path: '/api-v2/productinfo/delete',
+      path: '/api-v1/product/delete',
       method: 'delete',
       summary: 'Delete a product by ID.',
       query: ProductIdParam,
@@ -265,7 +265,7 @@ class ProductSchema extends RouteSchema {
     const { RequestIdHeader } = this.parameters()
 
     return this.createRoute({
-      path: '/api-v2/productinfo/upload',
+      path: '/api-v1/product/upload',
       method: 'post',
       summary: 'Upload a file associated with a product.',
       headers: RequestIdHeader,

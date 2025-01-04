@@ -10,13 +10,13 @@ describe('Product API Routes', () => {
     app = express()
     app.use(express.json())
     app.use(express.urlencoded({ extended: true }))
-    app.use('/api-v2/productinfo', ProductRouter)
+    app.use('/api-v1/product', ProductRouter)
   })
 
   describe('GET /get', () => {
     it('should return product details for a valid productId', async () => {
       const response = await request(app)
-        .get('/api-v2/productinfo/get')
+        .get('/api-v1/product/get')
         .query({ productId: '123e4567-e89b-12d3-a456-426614174000' })
 
       expect(response.status).toBe(200)
@@ -31,7 +31,7 @@ describe('Product API Routes', () => {
     })
 
     it('should return 422 for missing productId', async () => {
-      const response = await request(app).get('/api-v2/productinfo/get')
+      const response = await request(app).get('/api-v1/product/get')
 
       expect(response.status).toBe(422)
       expect(response.body).toHaveProperty('error')
@@ -50,7 +50,7 @@ describe('Product API Routes', () => {
       }
 
       const response = await request(app)
-        .post('/api-v2/productinfo/add')
+        .post('/api-v1/product/add')
         .send(newProduct)
 
       expect(response.status).toBe(201)
@@ -64,7 +64,7 @@ describe('Product API Routes', () => {
       const invalidProduct = { name: '', price: -10 }
 
       const response = await request(app)
-        .post('/api-v2/productinfo/add')
+        .post('/api-v1/product/add')
         .send(invalidProduct)
 
       expect(response.status).toBe(422)
@@ -83,7 +83,7 @@ describe('Product API Routes', () => {
       }
 
       const response = await request(app)
-        .put('/api-v2/productinfo/update')
+        .put('/api-v1/product/update')
         .query({ productId: '123e4567-e89b-12d3-a456-426614174000' })
         .send(updatedProduct)
 
@@ -97,7 +97,7 @@ describe('Product API Routes', () => {
 
     it('should return 422 for invalid product data', async () => {
       const response = await request(app)
-        .put('/api-v2/productinfo/update')
+        .put('/api-v1/product/update')
         .query({ productId: 'invalid-id' })
         .send({})
 
@@ -109,7 +109,7 @@ describe('Product API Routes', () => {
   describe('DELETE /delete', () => {
     it('should delete a product successfully', async () => {
       const response = await request(app)
-        .delete('/api-v2/productinfo/delete')
+        .delete('/api-v1/product/delete')
         .query({ productId: '123e4567-e89b-12d3-a456-426614174000' })
 
       expect(response.status).toBe(204)
@@ -117,7 +117,7 @@ describe('Product API Routes', () => {
 
     it('should return 422 for invalid productId', async () => {
       const response = await request(app)
-        .delete('/api-v2/productinfo/delete')
+        .delete('/api-v1/product/delete')
         .query({ productId: 'invalid-id' })
 
       expect(response.status).toBe(422)
@@ -128,7 +128,7 @@ describe('Product API Routes', () => {
   describe('POST /upload', () => {
     it('should upload a valid file successfully', async () => {
       const response = await request(app)
-        .post('/api-v2/productinfo/upload')
+        .post('/api-v1/product/upload')
         .attach('file', Buffer.from('Sample File Content'), {
           filename: 'sample.pdf',
           contentType: 'application/pdf',
@@ -142,7 +142,7 @@ describe('Product API Routes', () => {
 
     it('should return 422 for invalid file type', async () => {
       const response = await request(app)
-        .post('/api-v2/productinfo/upload')
+        .post('/api-v1/product/upload')
         .attach('file', Buffer.from('Sample File Content'), {
           filename: 'sample.txt',
           contentType: 'text/plain',
@@ -155,7 +155,7 @@ describe('Product API Routes', () => {
 
   describe('GET /swagger', () => {
     it('should return Swagger documentation', async () => {
-      const response = await request(app).get('/api-v2/productinfo/swagger')
+      const response = await request(app).get('/api-v1/product/swagger')
 
       expect(response.status).toBe(200)
       expect(response.body).toHaveProperty('swaggerDefinition')
