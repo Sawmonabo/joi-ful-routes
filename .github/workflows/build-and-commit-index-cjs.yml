@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - develop # Trigger only on pushes to the develop branch
+    paths:
+      - 'lib/**' # Trigger only when files within the lib directory change
 
 permissions:
   contents: write # Ensure the workflow can push to the repository
