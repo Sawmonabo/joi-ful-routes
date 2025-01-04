@@ -3,25 +3,24 @@ name: Build and Commit index.cjs
 on:
   push:
     branches:
-      - develop # Trigger only on pushes to the develop branch
+      - develop
     paths:
       - 'lib/**' # Trigger only when files within the lib directory change
 
 permissions:
-  contents: write # Ensure the workflow can push to the repository
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       # Step 1: Check out the repository
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Step 2: Set up Node.js environment
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 22.9.0
 
