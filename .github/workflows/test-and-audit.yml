@@ -1,0 +1,51 @@
+name: Test and Audit
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - '**.js'
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  test:
+    name: Run Tests Across Node.js Versions
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14, 16, 18, 20, 22.9.0]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Tests
+        run: npm test
+
+  audit:
+    name: Check for Vulnerabilities
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22.9.0 # Current version of Node.js used while writing this package
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run npm Audit
+        run: npm audit --audit-level=moderate
