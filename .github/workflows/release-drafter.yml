@@ -19,3 +19,5 @@ jobs:
 
       - name: Draft Release Notes
         uses: release-drafter/release-drafter@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
