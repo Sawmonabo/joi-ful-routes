@@ -186,7 +186,7 @@ class RouteSchema {
   }
 }
 
-// Conversion library for transforming joi schema objects into swagger/OpenApi OAS 3.0 schema definitions.
+// CConversion library for transforming joi schema objects into swagger/OpenApi OAS 3.0 schema definitions.
 
 const { isRef, object: _object, isSchema } = Joi;
 
