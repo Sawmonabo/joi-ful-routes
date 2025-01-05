@@ -1,0 +1,44 @@
+name: Build and Commit index.cjs
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'lib/**' # Trigger only when files within the lib directory change
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Check out the repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.9.0
+
+      # Step 3: Install dependencies
+      - name: Install Dependencies
+        run: npm ci
+
+      # Step 4: Build the project
+      - name: Run Build
+        run: npm run build
+
+      # Step 5: Commit and push the updated file (index.cjs only)
+      - name: Commit and Push Changes as Current User
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git add index.cjs
+          git commit -m "chore: update index.cjs [skip ci]" || echo "No changes to commit"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git

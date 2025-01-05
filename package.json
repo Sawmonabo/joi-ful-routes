@@ -1,0 +1,85 @@
+{
+  "name": "joi-ful-routes",
+  "version": "1.0.0-beta.1",
+  "description": "A seamless middleware for Node.js applications that integrates Joi validation with route handling and auto-generates Swagger documentation.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sawmonabo/joi-ful-routes.git"
+  },
+  "keywords": [
+    "joi",
+    "express",
+    "middleware",
+    "swagger",
+    "validation"
+  ],
+  "author": "Sawmon Abossedgh",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Sawmonabo/joi-ful-routes/issues"
+  },
+  "homepage": "https://github.com/Sawmonabo/joi-ful-routes#readme",
+  "scripts": {
+    "build": "npx rollup index.js --file index.cjs --format cjs",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,html,css,json,md,mdx,yml,yaml}\"",
+    "lint": "eslint",
+    "lint-fix": "eslint --fix",
+    "prepare": "husky"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=6.14.0"
+  },
+  "main": "index.js",
+  "exports": {
+    "require": "./index.cjs",
+    "import": "./index.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "joi": "^17.13.3",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.17.0",
+    "@types/jest": "^29.5.14",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jest": "^28.10.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-promise": "^7.2.1",
+    "eslint-plugin-security": "^3.0.1",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unicorn": "^56.0.1",
+    "esm": "^3.2.25",
+    "express": "^4.21.2",
+    "globals": "^15.14.0",
+    "husky": "^9.1.7",
+    "jest": "^29.7.0",
+    "lint-staged": "^15.3.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^3.1.9",
+    "pino-pretty": "^13.0.0",
+    "prettier": "^3.4.2",
+    "rollup": "^4.29.1",
+    "sinon": "^19.0.2",
+    "supertest": "^7.0.0"
+  },
+  "lint-staged": {
+    "!(*.min).js": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{jsx,ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{html,css,json,md,mdx,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
+}

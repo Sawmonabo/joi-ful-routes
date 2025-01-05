@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# Define emojis/icons for output messages
+CHECK_MARK="✅"
+SKIP="⏩"
+RUNNING="🔄"
+WARNING="⚠️"
+
+# Run lint-staged
+echo "${RUNNING} Running lint-staged..."
+npx lint-staged
+if [ $? -eq 0 ]; then
+  echo "${CHECK_MARK} lint-staged completed successfully."
+else
+  echo "${WARNING} lint-staged encountered issues. Fix them before committing."
+  exit 1
+fi
+
+# Skip tests if no test files are found
+echo "${RUNNING} Checking for test files..."
+if [ "$(find test -name '*.test.js' 2>/dev/null)" ]; then
+  echo "${RUNNING} Test files found. Running tests..."
+  npm test
+  if [ $? -eq 0 ]; then
+    echo "${CHECK_MARK} Tests passed."
+  else
+    echo "${WARNING} Tests failed. Fix them before committing."
+    exit 1
+  fi
+else
+  echo "${SKIP} No test files found. Skipping tests."
+fi
