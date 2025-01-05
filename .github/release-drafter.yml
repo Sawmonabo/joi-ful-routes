@@ -1,0 +1,26 @@
+name-template: 'Release v{{version}}'
+tag-template: 'v{{version}}'
+categories:
+  - title: 🚀 New Features
+    labels:
+      - feat
+      - enhancement
+  - title: 🐛 Bug Fixes
+    labels:
+      - fix
+      - bug
+  - title: 📖 Documentation Updates
+    labels:
+      - docs
+  - title: 🛠 Maintenance
+    labels:
+      - chore
+      - refactor
+change-template: '- {{title}} (#{{number}})'
+template: |
+  ## What's Changed
+
+  {{CHANGELOG}}
+
+  **Contributors**:
+  {{CONTRIBUTORS}}
