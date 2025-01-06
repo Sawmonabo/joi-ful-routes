@@ -280,7 +280,7 @@ Contributions are welcome! To get started:
 Please adhere to the [Contributor Covenant][homepage], version 2.1, available
 at <https://www.contributor-covenant.org/version/2/1/code_of_conduct.html>.
 
-## [homepage]: https://www.contributor-covenant.org
+[homepage]: https://www.contributor-covenant.org
 
 ## License
 
