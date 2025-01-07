@@ -162,14 +162,14 @@ describe('Product API Routes', () => {
         definition: {
           tags: [
             {
-              name: 'ProductInfo',
+              name: 'Product',
               description: 'Endpoints for managing Product resources.',
             },
           ],
           paths: {
             '/api-v1/product/get': {
               get: {
-                tags: ['ProductInfo'],
+                tags: ['Product'],
                 summary: 'Retrieve product details by ID.',
                 parameters: [
                   { $ref: '#/components/parameters/RequestIdHeader' },
@@ -211,7 +211,7 @@ describe('Product API Routes', () => {
             },
             '/api-v1/product/add': {
               post: {
-                tags: ['ProductInfo'],
+                tags: ['Product'],
                 summary: 'Add a new product.',
                 parameters: [],
                 requestBody: {
@@ -261,7 +261,7 @@ describe('Product API Routes', () => {
             },
             '/api-v1/product/update': {
               put: {
-                tags: ['ProductInfo'],
+                tags: ['Product'],
                 summary: 'Update product details by ID.',
                 parameters: [
                   { $ref: '#/components/parameters/ProductIdParam' },
@@ -323,7 +323,7 @@ describe('Product API Routes', () => {
             },
             '/api-v1/product/delete': {
               delete: {
-                tags: ['ProductInfo'],
+                tags: ['Product'],
                 summary: 'Delete a product by ID.',
                 parameters: [
                   { $ref: '#/components/parameters/ProductIdParam' },
@@ -368,7 +368,7 @@ describe('Product API Routes', () => {
             },
             '/api-v1/product/upload': {
               post: {
-                tags: ['ProductInfo'],
+                tags: ['Product'],
                 summary: 'Upload a file associated with a product.',
                 parameters: [
                   { $ref: '#/components/parameters/RequestIdHeader' },

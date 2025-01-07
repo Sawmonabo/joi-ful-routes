@@ -4,7 +4,7 @@ import { RouteSchema } from 'joi-ful-routes'
 class ProductSchema extends RouteSchema {
   static get tag() {
     return {
-      name: 'ProductInfo',
+      name: 'Product',
       description: 'Endpoints for managing Product resources.',
     }
   }
