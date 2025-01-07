@@ -63,7 +63,7 @@ class ProductSchema extends RouteSchema {
     }
   }
 
-  static getProduct() {
+  static get getProduct() {
     const { ProductMetadataResponse, ValidationErrorResponse } = this.schemas()
     const { RequestIdHeader, ProductIdParam } = this.parameters()
 
@@ -104,7 +104,7 @@ class ProductSchema extends RouteSchema {
     })
   }
 
-  static addProduct() {
+  static get addProduct() {
     const { ProductMetadataResponse, ValidationErrorResponse } = this.schemas()
 
     return this.createRoute({
@@ -153,7 +153,7 @@ class ProductSchema extends RouteSchema {
     })
   }
 
-  static updateProduct() {
+  static get updateProduct() {
     const { ProductMetadataResponse, ValidationErrorResponse } = this.schemas()
     const { ProductIdParam } = this.parameters()
 
@@ -214,7 +214,7 @@ class ProductSchema extends RouteSchema {
     })
   }
 
-  static deleteProduct() {
+  static get deleteProduct() {
     const { ValidationErrorResponse } = this.schemas()
     const { ProductIdParam } = this.parameters()
 
@@ -260,7 +260,7 @@ class ProductSchema extends RouteSchema {
     })
   }
 
-  static uploadFile() {
+  static get uploadFile() {
     const { FileUploadSchema, ValidationErrorResponse } = this.schemas()
     const { RequestIdHeader } = this.parameters()
 
@@ -309,32 +309,6 @@ class ProductSchema extends RouteSchema {
         },
       },
     })
-  }
-
-  static get paths() {
-    const getProductRoute = this.getProduct()
-    const addProductRoute = this.addProduct()
-    const updateProductRoute = this.updateProduct()
-    const deleteProductRoute = this.deleteProduct()
-    const uploadFileRoute = this.uploadFile()
-
-    return {
-      [getProductRoute.path]: {
-        [getProductRoute.method]: getProductRoute,
-      },
-      [addProductRoute.path]: {
-        [addProductRoute.method]: addProductRoute,
-      },
-      [updateProductRoute.path]: {
-        [updateProductRoute.method]: updateProductRoute,
-      },
-      [deleteProductRoute.path]: {
-        [deleteProductRoute.method]: deleteProductRoute,
-      },
-      [uploadFileRoute.path]: {
-        [uploadFileRoute.method]: uploadFileRoute,
-      },
-    }
   }
 }
 
