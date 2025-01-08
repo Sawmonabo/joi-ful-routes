@@ -158,7 +158,382 @@ describe('Product API Routes', () => {
       const response = await request(app).get('/api-v1/product/swagger')
 
       expect(response.status).toBe(200)
-      expect(response.body).toHaveProperty('swaggerDefinition')
+      expect(response.body).toEqual({
+        definition: {
+          tags: [
+            {
+              name: 'Product',
+              description: 'Endpoints for managing Product resources.',
+            },
+          ],
+          paths: {
+            '/api-v1/product/get': {
+              get: {
+                tags: ['Product'],
+                summary: 'Retrieve product details by ID.',
+                parameters: [
+                  { $ref: '#/components/parameters/RequestIdHeader' },
+                  { $ref: '#/components/parameters/ProductIdParam' },
+                ],
+                responses: {
+                  200: {
+                    description: 'Product details retrieved successfully.',
+                    content: {
+                      'application/json': {
+                        schema: {
+                          $ref: '#/components/schemas/ProductMetadataResponse',
+                        },
+                      },
+                    },
+                  },
+                  400: {
+                    description: 'Bad Request - Invalid parameters.',
+                    content: {
+                      'application/json': {
+                        schema: {
+                          $ref: '#/components/schemas/ValidationErrorResponse',
+                        },
+                      },
+                    },
+                  },
+                  500: {
+                    description: 'Internal server error.',
+                    content: {
+                      'application/json': {
+                        schema: {
+                          $ref: '#/components/schemas/InternalServerError',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            '/api-v1/product/add': {
+              post: {
+                tags: ['Product'],
+                summary: 'Add a new product.',
+                parameters: [],
+                requestBody: {
+                  description: 'Product details for the new product.',
+                  required: true,
+                  content: {
+                    'application/json': {
+                      schema: {
+                        $ref: '#/components/schemas/ProductMetadataResponse',
+                      },
+                    },
+                  },
+                },
+                responses: {
+                  201: {
+                    description: 'Product added successfully.',
+                    content: {
+                      'application/json': {
+                        schema: {
+                          $ref: '#/components/schemas/ProductAddedResponse',
+                        },
+                      },
+                    },
+                  },
+                  400: {
+                    description: 'Bad Request - Invalid product data.',
+                    content: {
+                      'application/json': {
+                        schema: {
+                          $ref: '#/components/schemas/ValidationErrorResponse',
+                        },
+                      },
+                    },
+                  },
+                  500: {
+                    description: 'Internal server error.',
+                    content: {
+                      'application/json': {
+                        schema: {
+                          $ref: '#/components/schemas/InternalServerError',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            '/api-v1/product/update': {
+              put: {
+                tags: ['Product'],
+                summary: 'Update product details by ID.',
+                parameters: [
+                  { $ref: '#/components/parameters/ProductIdParam' },
+                ],
+                requestBody: {
+                  description: 'Updated product details.',
+                  required: true,
+                  content: {
+                    'application/json': {
+                      schema: {
+                        $ref: '#/components/schemas/ProductMetadataResponse',
+                      },
+                    },
+                  },
+                },
+                responses: {
+                  200: {
+                    description: 'Product updated successfully.',
+                    content: {
+                      'application/json': {
+                        schema: {
+                          $ref: '#/components/schemas/ProductUpdatedResponse',
+                        },
+                      },
+                    },
+                  },
+                  400: {
+                    description: 'Bad Request - Invalid product data.',
+                    content: {
+                      'application/json': {
+                        schema: {
+                          $ref: '#/components/schemas/ValidationErrorResponse',
+                        },
+                      },
+                    },
+                  },
+                  404: {
+                    description: 'Not Found - Product does not exist.',
+                    content: {
+                      'application/json': {
+                        schema: {
+                          $ref: '#/components/schemas/ProductNotFound',
+                        },
+                      },
+                    },
+                  },
+                  500: {
+                    description: 'Internal server error.',
+                    content: {
+                      'application/json': {
+                        schema: {
+                          $ref: '#/components/schemas/InternalServerError',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            '/api-v1/product/delete': {
+              delete: {
+                tags: ['Product'],
+                summary: 'Delete a product by ID.',
+                parameters: [
+                  { $ref: '#/components/parameters/ProductIdParam' },
+                ],
+                responses: {
+                  204: {
+                    description: 'Product deleted successfully.',
+                    content: {},
+                  },
+                  400: {
+                    description: 'Bad Request - Invalid product ID.',
+                    content: {
+                      'application/json': {
+                        schema: {
+                          $ref: '#/components/schemas/ValidationErrorResponse',
+                        },
+                      },
+                    },
+                  },
+                  404: {
+                    description: 'Not Found - Product does not exist.',
+                    content: {
+                      'application/json': {
+                        schema: {
+                          $ref: '#/components/schemas/ProductNotFound',
+                        },
+                      },
+                    },
+                  },
+                  500: {
+                    description: 'Internal server error.',
+                    content: {
+                      'application/json': {
+                        schema: {
+                          $ref: '#/components/schemas/InternalServerError',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            '/api-v1/product/upload': {
+              post: {
+                tags: ['Product'],
+                summary: 'Upload a file associated with a product.',
+                parameters: [
+                  { $ref: '#/components/parameters/RequestIdHeader' },
+                ],
+                requestBody: {
+                  description: 'File upload for product information.',
+                  required: true,
+                  content: {
+                    'multipart/form-data': {
+                      schema: {
+                        $ref: '#/components/schemas/FileUploadSchema',
+                      },
+                    },
+                  },
+                },
+                responses: {
+                  200: {
+                    description: 'File uploaded successfully.',
+                    content: {
+                      'application/json': {
+                        schema: {
+                          $ref: '#/components/schemas/FileUploadResponse',
+                        },
+                      },
+                    },
+                  },
+                  400: {
+                    description: 'Bad Request - Invalid file upload.',
+                    content: {
+                      'application/json': {
+                        schema: {
+                          $ref: '#/components/schemas/ValidationErrorResponse',
+                        },
+                      },
+                    },
+                  },
+                  500: {
+                    description: 'Internal server error.',
+                    content: {
+                      'application/json': {
+                        schema: {
+                          $ref: '#/components/schemas/InternalServerError',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          components: {
+            schemas: {
+              ProductMetadataResponse: {
+                type: 'object',
+                properties: {
+                  productId: { type: 'string' },
+                  name: { type: 'string' },
+                  category: { type: 'string' },
+                  price: { type: 'number', format: 'float', minimum: 1 },
+                  stock: { type: 'integer', minimum: 0 },
+                  description: { type: 'string', nullable: true },
+                },
+                required: ['name', 'category', 'price', 'stock'],
+                additionalProperties: false,
+              },
+              ValidationErrorResponse: {
+                type: 'object',
+                properties: {
+                  error: {
+                    type: 'string',
+                    description: 'Description of the validation error.',
+                  },
+                  warning: {
+                    type: 'string',
+                    description: 'Warning message if applicable.',
+                  },
+                },
+                additionalProperties: false,
+              },
+              FileUploadSchema: {
+                type: 'object',
+                properties: {
+                  mimetype: {
+                    type: 'string',
+                    enum: ['image/jpeg', 'image/png', 'application/pdf'],
+                  },
+                  file: { type: 'string', format: 'binary' },
+                },
+                required: ['mimetype', 'file'],
+                additionalProperties: false,
+                description: 'The file to be uploaded and processed.',
+              },
+              InternalServerError: {
+                type: 'object',
+                properties: {
+                  error: { type: 'string', default: 'Internal Server Error' },
+                },
+                additionalProperties: false,
+              },
+              ProductAddedResponse: {
+                type: 'object',
+                properties: {
+                  message: {
+                    type: 'string',
+                    default: 'Product added successfully.',
+                  },
+                },
+                additionalProperties: false,
+              },
+              ProductUpdatedResponse: {
+                type: 'object',
+                properties: {
+                  message: {
+                    type: 'string',
+                    default: 'Product updated successfully.',
+                  },
+                },
+                additionalProperties: false,
+              },
+              ProductNotFound: {
+                type: 'object',
+                properties: {
+                  error: { type: 'string', default: 'Product not found.' },
+                },
+                additionalProperties: false,
+              },
+              FileUploadResponse: {
+                type: 'object',
+                properties: {
+                  message: {
+                    type: 'string',
+                    default: 'File uploaded successfully.',
+                  },
+                },
+                additionalProperties: false,
+              },
+            },
+            parameters: {
+              RequestIdHeader: {
+                name: 'x-request-id',
+                in: 'header',
+                required: false,
+                schema: {
+                  type: 'string',
+                  format: 'uuid',
+                  example: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+                },
+                description: 'Unique identifier for the HTTP request',
+              },
+              ProductIdParam: {
+                name: 'productId',
+                in: 'query',
+                required: true,
+                schema: {
+                  type: 'string',
+                  format: 'uuid',
+                  example: '123e4567-e89b-12d3-a456-426614174000',
+                },
+                description:
+                  'A string that represents a valid UUID for the product',
+              },
+            },
+          },
+        },
+      })
     })
   })
 })

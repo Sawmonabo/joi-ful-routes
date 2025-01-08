@@ -14,7 +14,7 @@ const router = express.Router()
 // Route: Get Product by ID
 router.get(
   '/get',
-  validateRequest(ProductSchema.getProduct()),
+  validateRequest(ProductSchema.getProduct),
   async (req, res) => {
     const { productId } = req.query
     // Mocked response for demonstration
@@ -32,7 +32,7 @@ router.get(
 // Route: Add a new Product
 router.post(
   '/add',
-  validateRequest(ProductSchema.addProduct()),
+  validateRequest(ProductSchema.addProduct),
   async (req, res) => {
     const product = req.body
     // Mocked response for demonstration
@@ -46,7 +46,7 @@ router.post(
 // Route: Update Product by ID
 router.put(
   '/update',
-  validateRequest(ProductSchema.updateProduct()),
+  validateRequest(ProductSchema.updateProduct),
   async (req, res) => {
     const { productId } = req.query
     const updatedProduct = req.body
@@ -62,7 +62,7 @@ router.put(
 // Route: Delete Product by ID
 router.delete(
   '/delete',
-  validateRequest(ProductSchema.deleteProduct()),
+  validateRequest(ProductSchema.deleteProduct),
   async (req, res) => {
     const { productId } = req.query // eslint-disable-line no-unused-vars
     // Mocked response for demonstration
@@ -74,7 +74,7 @@ router.delete(
 router.post(
   '/upload',
   uploadMiddleware.single('file'),
-  validateRequest(ProductSchema.uploadFile()),
+  validateRequest(ProductSchema.uploadFile),
   async (req, res) => {
     if (!req.file) {
       return res.status(500).json({ error: 'File upload failed' })
@@ -88,7 +88,7 @@ router.post(
 // Route: Swagger Documentation
 router.get('/swagger', (req, res) => {
   const swaggerDefinition = schemaToSwagger(ProductSchema)
-  res.status(200).json({ swaggerDefinition })
+  res.status(200).json(swaggerDefinition)
 })
 
 export default router

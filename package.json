@@ -1,6 +1,6 @@
 {
   "name": "joi-ful-routes",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "description": "A seamless middleware for Node.js applications that integrates Joi validation with route handling and auto-generates Swagger documentation.",
   "repository": {
     "type": "git",
