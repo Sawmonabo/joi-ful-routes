@@ -111,28 +111,45 @@ const validateRequest = (schema) => (req, res, next) => {
   }
 };
 
+/**
+ * Base class for all schemas. Provides utilities for creating and managing route definitions.
+ */
 class RouteSchema {
+  /**
+   * Subclasses must override this getter to provide a "tag" object used in Swagger documentation.
+   * Example:
+   *   { name: 'ExampleTag', description: 'Detailed description of the tag.' }
+   * @throws {Error} If not implemented in a subclass.
+   */
   static get tag() {
     throw new Error(
       'You must implement the static getter "tag" in your subclass.'
     )
   }
 
-  static get tags() {
-    return [this.tag]
-  }
-
+  /**
+   * Subclasses must override this method to provide Joi schemas for request validation.
+   * @throws {Error} If not implemented in a subclass.
+   */
   static schemas() {
     throw new Error('You must implement the schemas() method in your subclass.')
   }
 
+  /**
+   * Subclasses must override this method to provide Joi schemas for route parameters, if applicable.
+   * @throws {Error} If not implemented in a subclass.
+   */
   static parameters() {
     throw new Error(
       'You must implement the parameters() method in your subclass.'
     )
   }
 
-  // Aggregate the schema definitions
+  /**
+   * Aggregates schemas and parameters into a structure for OpenAPI components.
+   * This is consumed by Swagger or other documentation generators.
+   * @returns {Object} An object containing `schemas` and `parameters`.
+   */
   static components() {
     return {
       schemas: this.schemas(),
@@ -141,22 +158,18 @@ class RouteSchema {
   }
 
   /**
-   * Helper to define a route object for the final swagger
-   * {
-   *   path: '/some/path',
-   *   method: 'get',
-   *   summary: 'Some summary',
-   *   tags: ['...'],
-   *   headers: Joi.object() (optional),
-   *   query: Joi.object() (optional),
-   *   body: { content: { 'application/json': { schema: Joi.object() }}, ... } (optional),
-   *   responses: {
-   *     [statusCode]: {
-   *       description: '',
-   *       content: { ... }
-   *     }
-   *   },
-   * }
+   * Utility method for constructing API route definitions.
+   * Subclasses should use this to define their routes.
+   * @param {Object} options - Options for defining a route.
+   * @param {string} options.path - The API endpoint path.
+   * @param {string} options.method - The HTTP method (e.g., 'get', 'post').
+   * @param {string} options.summary - A summary of the route's purpose.
+   * @param {Object} [options.headers] - Optional headers schema.
+   * @param {Object} [options.query] - Optional query parameter schema.
+   * @param {Object} [options.body] - Optional request body schema.
+   * @param {Object} [options.responses] - Optional response schemas.
+   * @throws {Error} If `path`, `method`, or `summary` is missing.
+   * @returns {Object} A route definition object.
    */
   static createRoute({
     path,
@@ -177,12 +190,73 @@ class RouteSchema {
       path,
       method,
       summary,
-      tags: this.tags.map((tag) => tag.name), // e.g. "ExampleRoute"
+      // The "tags" property helps group operations in OpenAPI docs.
+      tags: this._tags.map((tag) => tag.name),
       ...(headers && { headers }),
       ...(query && { query }),
       ...(body && { body }),
       ...(responses && { responses }),
     }
+  }
+
+  /**
+   * Internal method for generating OpenAPI tags.
+   * Tags are used for grouping routes in the documentation.
+   * Subclasses should define their `tag` to leverage this grouping.
+   * @returns {Array} An array of tag objects.
+   * @private
+   */
+  static get _tags() {
+    return [this.tag]
+  }
+
+  /**
+   * Internal method for generating a reflection-based structure of paths.
+   * This scans static properties of the class and identifies route definitions.
+   * @returns {Object} A Swagger-compatible "paths" object.
+   * @private
+   */
+  static get _paths() {
+    const allProps = Object.getOwnPropertyNames(this);
+    const swaggerPaths = {};
+
+    for (const propName of allProps) {
+      // Skip built-ins or known base methods
+      if (['length', 'name', 'prototype'].includes(propName)) {
+        continue
+      }
+      // Skip known base methods
+      if (
+        [
+          'createRoute',
+          'schemas',
+          'parameters',
+          'components',
+          'tag',
+          '_tags',
+          '_paths', // itself
+        ].includes(propName)
+      ) {
+        continue
+      }
+
+      // Check if this static property looks like a route object
+      const potentialRoute = this[propName];
+      if (
+        potentialRoute &&
+        typeof potentialRoute === 'object' &&
+        potentialRoute.path &&
+        potentialRoute.method
+      ) {
+        // e.g. potentialRoute = { path: '/some', method: 'get', summary: '...' }
+        const { path, method } = potentialRoute;
+        if (!swaggerPaths[path]) {
+          swaggerPaths[path] = {};
+        }
+        swaggerPaths[path][method] = potentialRoute;
+      }
+    }
+    return swaggerPaths
   }
 }
 
@@ -321,7 +395,7 @@ function parseWhens(schema, existingComponents, newComponentsByRef) {
 /**
  * Constructs Swagger schema for alternative Joi schemas.
  *
- * @param {joi.Schema[]} alternatives - The alternative Joi schemas.
+ * @param {Joi.Schema[]} alternatives - The alternative Joi schemas.
  * @param {object} existingComponents - Existing Swagger components.
  * @param {object} newComponentsByRef - Newly added components by reference.
  * @param {string} mode - The OpenAPI mode ('anyOf', 'oneOf', etc.).
@@ -383,7 +457,7 @@ function parseValidsAndInvalids(schema, filterFunc) {
 /**
  * Retrieves the reference value from metadata or fallback.
  *
- * @param {joi.Ref} ref - The Joi reference.
+ * @param {Joi.Ref} ref - The Joi reference.
  * @param {Joi.Schema} schema - The Joi schema.
  * @param {*} fallback - The fallback value if reference is not found.
  * @returns {*} The resolved reference value or fallback.
@@ -672,11 +746,16 @@ const parseAsType = {
 /**
  * Parses a Joi schema into Swagger/OpenAPI schema definitions.
  *
- * @param {joi.Schema|object} schema - The Joi schema or a plain object to be converted to a Joi object schema.
- * @param {object} [existingComponents={}] - Existing Swagger components to reference.
- * @param {boolean} [isSchemaOverride=false] - Indicates if the current schema is an override.
- * @returns {object|false} An object containing the Swagger schema and components or false if the schema is forbidden.
- * @throws {Error} If no schema is provided or schema is invalid.
+ * @param {Joi.Schema|object} schema - The Joi schema or a plain object to be converted to a Joi object schema.
+ * @param {Object<string, Object>} [existingComponents={}] - Existing Swagger components (schemas, parameters, etc.) that may be referenced by the parsed schema.
+ * @param {boolean} [isSchemaOverride=false] - Indicates whether the current schema is being overridden by another schema (to prevent nested overrides).
+ * @returns {{swagger: Object, components: Object<string, Object>}|false} -
+ *   An object containing:
+ *   - `swagger`: The converted Swagger/OpenAPI schema.
+ *   - `components`: The new or updated Swagger components.
+ *   Returns `false` if the schema is marked as `forbidden`.
+ * @throws {Error} If no schema is provided or if schema override rules are violated.
+ * @throws {TypeError} If the provided schema is not a valid Joi schema or if it has an unrecognized type.
  */
 function parse(
   schema,
@@ -787,8 +866,19 @@ function parse(
 }
 
 /**
+ * @typedef {import('./route-schema').default} RouteSchema
+ * Represents a RouteSchema class, including its static properties and methods.
+ */
+
+/**
+ * @typedef {Object} SwaggerComponents
+ * @property {Object} schemas - Object containing Swagger schemas.
+ * @property {Object} parameters - Object containing Swagger parameters.
+ */
+
+/**
  * Primary entry point: convert a Joi-based RouteSchema class to Swagger documentation.
- * @param {Object} schemaClass - The schema class with paths, components, and tags.
+ * @param {RouteSchema} schemaClass - The schema class with paths, components, and tags.
  * @returns {Object} The generated Swagger documentation.
  */
 function schemaToSwagger(schemaClass) {
@@ -807,7 +897,7 @@ function schemaToSwagger(schemaClass) {
   // Finally, return the fully assembled definition
   return {
     definition: {
-      tags: schemaClass.tags || [],
+      tags: schemaClass._tags || [],
       paths: swaggerPaths,
       components: swaggerComponents,
     },
@@ -815,9 +905,15 @@ function schemaToSwagger(schemaClass) {
 }
 
 /**
- * Step 1: Build the 'components' section (including 'schemas' and 'parameters').
+ * Build the 'components' section (including 'schemas' and 'parameters').
  * We also return `schemaMap` and `convertedSchemasMap` so the path-building code
  * can reuse them (preventing duplicates).
+ *
+ * @param {RouteSchema} schemaClass - The schema class with paths, components, and tags.
+ * @returns {Object} The Swagger components and supporting maps.
+ * @returns {SwaggerComponents} return.swaggerComponents - The built components.
+ * @returns {Map} return.schemaMap - Maps Joi object -> assigned schema name.
+ * @returns {Map} return.convertedSchemasMap - Maps JSON string of Swagger schema -> schema name.
  */
 function buildSwaggerComponents(schemaClass) {
   const components = schemaClass.components();
@@ -878,8 +974,14 @@ function buildSwaggerComponents(schemaClass) {
 }
 
 /**
- * Step 2: Build the 'paths' object from the route definitions in schemaClass.paths.
- * Reuses the 'schemaMap' and 'convertedSchemasMap' from buildSwaggerComponents() to avoid duplicates.
+ * Build the 'paths' object from the route definitions in schemaClass._paths.
+ * Reuses schema and conversion maps from `buildSwaggerComponents`.
+ *
+ * @param {RouteSchema} schemaClass - The schema class with paths, components, and tags.
+ * @param {SwaggerComponents} swaggerComponents - The built Swagger components.
+ * @param {Map} schemaMap - Maps Joi object -> assigned schema name.
+ * @param {Map} convertedSchemasMap - Maps JSON string of Swagger schema -> schema name.
+ * @returns {Object} The Swagger paths object.
  */
 function buildSwaggerPaths(
   schemaClass,
@@ -888,17 +990,13 @@ function buildSwaggerPaths(
   convertedSchemasMap
 ) {
   const swaggerPaths = {};
-  const { paths } = schemaClass;
+  const paths = schemaClass._paths;
 
-  // We may need parameter key->name map. In your original code, it was built inline,
-  // but we've integrated a partial approach in buildSwaggerComponents. For clarity,
-  // let's read from swaggerComponents.parameters if needed, or we can keep your approach.
-  //
-  // We'll build a quick paramName->refName map from the existing swaggerComponents:
+  // Build a quick paramName->refName map from the existing swaggerComponents:
   const paramNameToRefName = {};
   Object.entries(swaggerComponents.parameters).forEach(
     ([refName, paramObj]) => {
-      paramNameToRefName[paramObj.name] = refName; // e.g. paramObj.name = "domain" => refName = "CustomDomainParam"
+      paramNameToRefName[paramObj.name] = refName; // Map param names to their references
     }
   );
 
@@ -911,18 +1009,13 @@ function buildSwaggerPaths(
       return
     }
 
-    // Collect parameters from headers/query
     const parameters = collectParameters(methodConfig, paramNameToRefName);
-
-    // Build requestBody if defined
     const requestBody = buildRequestBody(
       methodConfig.body,
       swaggerComponents,
       schemaMap,
       convertedSchemasMap
     );
-
-    // Build responses
     const responses = buildResponses(
       methodConfig.responses,
       swaggerComponents,
@@ -945,8 +1038,11 @@ function buildSwaggerPaths(
 }
 
 /**
- * Collect parameters from methodConfig.headers and methodConfig.query,
- * referencing #/components/parameters/<refName>.
+ * Collect parameters from headers and query in method configuration.
+ *
+ * @param {Object} methodConfig - The route method configuration.
+ * @param {Object} paramNameToRefName - Map of parameter names to reference names.
+ * @returns {Array<Object>} Array of parameter references for Swagger.
  */
 function collectParameters(methodConfig, paramNameToRefName) {
   const parameters = [];
@@ -976,7 +1072,13 @@ function collectParameters(methodConfig, paramNameToRefName) {
 }
 
 /**
- * Build the requestBody if methodConfig.body exists.
+ * Build the requestBody for a route if a body configuration exists.
+ *
+ * @param {Object} bodyConfig - Configuration for the request body.
+ * @param {SwaggerComponents} swaggerComponents - The built Swagger components.
+ * @param {Map} schemaMap - Maps Joi object -> assigned schema name.
+ * @param {Map} convertedSchemasMap - Maps JSON string of Swagger schema -> schema name.
+ * @returns {Object|null} The requestBody object or null if not applicable.
  */
 function buildRequestBody(
   bodyConfig,
@@ -1011,7 +1113,13 @@ function buildRequestBody(
 }
 
 /**
- * Build the responses for each status code in methodConfig.responses.
+ * Build the responses object for a route.
+ *
+ * @param {Object} responsesConfig - Configuration for the responses.
+ * @param {SwaggerComponents} swaggerComponents - The built Swagger components.
+ * @param {Map} schemaMap - Maps Joi object -> assigned schema name.
+ * @param {Map} convertedSchemasMap - Maps JSON string of Swagger schema -> schema name.
+ * @returns {Object} The responses object for Swagger.
  */
 function buildResponses(
   responsesConfig,
@@ -1097,7 +1205,7 @@ function getSchemaNameFromObj(
   if (!chosenName) {
     throw new Error(
       'Encountered a Joi schema without a label. ' +
-        'Please define a label() or define the schema in static schemas() for reuse.'
+        'Please add .label() to your joi object or define the schema in static schemas() for reuse.'
     )
   }
 
