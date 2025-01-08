@@ -224,29 +224,15 @@ class ProductSchema extends RouteSchema {
       },
     })
   }
-
-  static get paths() {
-    const getProductRoute = this.getProduct()
-    const uploadFileRoute = this.uploadFile()
-
-    return {
-      [getProductRoute.path]: {
-        [getProductRoute.method]: getProductRoute,
-      },
-      [uploadFileRoute.path]: {
-        [uploadFileRoute.method]: uploadFileRoute,
-      },
-    }
-  }
 }
 
 const app = express()
 app.use(express.json())
-app.use('/api', validateRequest(ProductSchema.getProduct()))
+app.use('/api', validateRequest(ProductSchema.getProduct))
 app.post(
   '/api-v1/product/upload',
   upload.single('file'),
-  validateRequest(ProductSchema.uploadFile()),
+  validateRequest(ProductSchema.uploadFile),
   (req, res) => {
     res.status(200).json({
       message: `File uploaded successfully. Received file: ${req.file.originalname}`,
