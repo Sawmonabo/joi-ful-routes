@@ -1,43 +1,47 @@
 # CHANGELOG.md
 
-## [1.0.0-beta.1] - 2025-01-05
+## [1.0.0-beta.2] - 2025-01-07
 
 ### Summary
 
-The `1.0.0-beta.1` release marks the first beta version, introducing foundational features such as
-request validation, Swagger documentation, and file upload support, alongside comprehensive testing
-for reliability.
+The `1.0.0-beta.2` release builds on the foundational beta, refining key features such as route autodiscovery, enhanced validation, and Swagger/OpenAPI support. This version also introduces updated configurations and documentation enhancements.
 
 ---
 
 ### Added
 
-- **Request Validation Middleware**:
+- **Route Autodiscovery**:
 
-  - Introduced middleware for validating API requests using Joi schemas.
-  - Provides robust input validation for consistent API behavior.
+  - `RouteSchema.paths` now supports automatic route discovery, reducing boilerplate.
+  - Static route definitions are streamlined for better maintainability.
 
-- **Swagger Documentation**:
+- **Enhanced Swagger Integration**:
 
-  - Integrated automatic OpenAPI documentation generation using `schemaToSwagger`.
-  - Ensures seamless developer onboarding and API exploration.
+  - Improved `schemaToSwagger` generation with private tags and parameters for clearer OpenAPI documentation.
+  - Expanded Swagger path components for comprehensive API definitions.
 
-- **File Upload Support**:
-
-  - Added file upload handling with custom validation using Multer.
-  - Endpoint `/api-v1/product/upload` now supports secure file uploads.
-
-- **Comprehensive Testing**:
-  - Added test suites for:
-    - Middleware validation.
-    - Schema validation.
-    - Swagger documentation generation.
+- **Release Drafter Integration**:
+  - Added release drafter configuration to automate and standardize release notes generation.
 
 ---
 
 ### Changed
 
-- **Documentation**:
-  - Updated `README.md` with:
-    - Examples for using API validation middleware.
-    - Steps to integrate file uploads.
+- **Refactored Documentation**:
+
+  - Updated `README.md` with examples using static route methods.
+  - Improved examples for clarity, focusing on developer usability.
+
+- **Refined RouteSchema API**:
+
+  - Made `tags` and `paths` methods private to encapsulate their functionality.
+
+- **Validation Enhancements**:
+  - Expanded Joi schemas to support stricter validation for file uploads and request bodies.
+
+---
+
+### Breaking Changes
+
+- **Static Route Methods**:
+  - RouteSchema methods (e.g., `getProduct`, `addProduct`) are now accessed as `static get` methods, ensuring consistency and simplifying inheritance.
