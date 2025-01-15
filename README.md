@@ -133,7 +133,7 @@ class ProductSchema extends RouteSchema {
     }
   }
 
-  static getProduct() {
+  static get getProduct() {
     const { ProductMetadataResponse, ValidationErrorResponse } = this.schemas()
     const { RequestIdHeader, ProductIdParam } = this.parameters()
 
@@ -174,7 +174,7 @@ class ProductSchema extends RouteSchema {
     })
   }
 
-  static uploadFile() {
+  static get uploadFile() {
     const { FileUploadSchema, ValidationErrorResponse } = this.schemas()
     const { RequestIdHeader } = this.parameters()
 
